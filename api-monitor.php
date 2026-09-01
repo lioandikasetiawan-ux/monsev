@@ -55,7 +55,6 @@ function fetchServerData($url, $token) {
     return $data;
 }
 
-
 $servers = [
     [
         'name' => 'Server 36 (Pusat)',
