@@ -1,7 +1,22 @@
 <?php
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=UTF-8');
 
-$api_token = 'RAHASIA_SUPER_AMAN_BANGET_123';
+// Memuat Composer Autoload untuk membaca file .env
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+    if (class_exists('Dotenv\Dotenv')) {
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+        $dotenv->safeLoad();
+    }
+}
+
+// Ambil token dari environment
+$api_token = $_ENV['SERVER_MONITOR_TOKEN'] ?? getenv('SERVER_MONITOR_TOKEN') ?: '';
+
+// Ambil IP server dari environment (dengan fallback IP default jika .env belum diset)
+$server36_ip = $_ENV['SERVER_36_IP'] ?? getenv('SERVER_36_IP') ?: '103.144.231.36';
+$server38_ip = $_ENV['SERVER_38_IP'] ?? getenv('SERVER_38_IP') ?: '103.144.231.38';
+$server46_ip = $_ENV['SERVER_46_IP'] ?? getenv('SERVER_46_IP') ?: '103.144.231.46';
 
 function fetchServerData($url, $token) {
     $context = stream_context_create([
@@ -58,18 +73,18 @@ function fetchServerData($url, $token) {
 $servers = [
     [
         'name' => 'Server 36 (Pusat)',
-        'ip' => '103.144.231.36',
-        'metrics' => fetchServerData('http://103.144.231.36/server-stats.php', $api_token)
+        'ip' => $server36_ip,
+        'metrics' => fetchServerData("http://{$server36_ip}/server-stats.php", $api_token)
     ],
     [
         'name' => 'Server 38',
-        'ip' => '103.144.231.38',
-        'metrics' => fetchServerData('http://103.144.231.38/server-stats.php', $api_token)
+        'ip' => $server38_ip,
+        'metrics' => fetchServerData("http://{$server38_ip}/server-stats.php", $api_token)
     ],
     [
         'name' => 'Server 46',
-        'ip' => '103.144.231.46',
-        'metrics' => fetchServerData('http://103.144.231.46/server-stats.php', $api_token)
+        'ip' => $server46_ip,
+        'metrics' => fetchServerData("http://{$server46_ip}/server-stats.php", $api_token)
     ]
 ];
 
